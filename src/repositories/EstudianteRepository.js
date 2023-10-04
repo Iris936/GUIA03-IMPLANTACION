@@ -1,7 +1,5 @@
 const pool = require('../config/databaseController');
 
- 
-
 module.exports = {
     obtenerTodosLosEstudiantes: async() => {
         try {
@@ -9,7 +7,7 @@ module.exports = {
             return result;
 
         } catch (error) {
-            console.error('Ocurrió un problema al consultar la lista de estudiantes: ', error);
+            console.error('Error un problema al consultar la lista de estudiantes: ', error);
 
         }
 

@@ -6,13 +6,13 @@
 
             <div class="col-sm-6">
 
-                <h3>Listado estudiantes</h3>
+                <h3>Listado de carreras</h3>
 
             </div>
 
             <div class="col-sm-6">
 
-                <a href="/estudiantes/agregar" class="btn btn-success d-block text-white">Agregar estudiante</a>
+                <a href="/carreras/agregar" class="btn btn-success d-block text-white">Agregar carrera</a>
 
             </div>
 
@@ -28,17 +28,9 @@
 
             <tr>
 
-                <th scope="col">ID</th>
-
-                <th scope="col">Nombre</th>
-
-                <th scope="col">Apellido</th>
-
-                <th scope="col">Email</th>
-
                 <th scope="col">ID Carrera</th>
 
-                <th scope="col">Usuario</th>
+                <th scope="col">Nombre de Carrera</th>
 
                 <th scope="col">Opciones</th>
 
@@ -48,31 +40,23 @@
 
         <tbody>
 
-            {{#each estudiantes}}
+            {{#each carreras}}
 
             <tr>
 
-                <th scope="row">{{idestudiante}}</th>
-
-                <td>{{nombre}}</td>
-
-                <td>{{apellido}}</td>
-
-                <td>{{email}}</td>
-
                 <td>{{idcarrera}}</td>
 
-                <td>{{usuario}}</td>
+                <td>{{carrera}}</td>
 
                 <td>
 
-                <a href="/estudiantes/actualizar/{{idestudiante}}" class="btn btn-primary text-white">Modificar</a>
+                    <a href="/carreras/actualizar/{{idcarrera}}" class="btn btn-primary text-white">Modificar</a>
 
-                <a href="/estudiantes/eliminar/{{idestudiante}}" class="btn btn-danger text-white">Eliminar</a>
-
-                </td>
+                    <a href="/carreras/eliminar/{{idcarrera}}" class="btn btn-danger text-white">Eliminar</a>
 
  
+
+                </td>
 
             </tr>
 
@@ -85,3 +69,5 @@
     </div>
 
 </div>
+
+ 
