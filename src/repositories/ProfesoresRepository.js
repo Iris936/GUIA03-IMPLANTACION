@@ -2,6 +2,7 @@ const pool = require('../config/databaseController');
 
 module.exports = {
 
+
     obtenerTodosLosProfesores: async () => {
         try {
             const result = await pool.query('SELECT * FROM profesores');
@@ -49,3 +50,4 @@ module.exports = {
     }
 }
 
+//Finalizado
