@@ -1,16 +1,16 @@
 <div class="container p-4">
     <div class="row justify-content-center">
-        <h1>Actualizar Carrera</h1>
+        <h1>Actualizar Profesor</h1>
     </div>
     <div class="row justify-content-center mt-4">
         <div class="col-md-4">
-            <form action="/carreras/actualizar/{{carrera.idcarrera}}" method="POST">
+            <form action="/profesores/actualizar/{{profesor.idProfesor}}" method="POST">
                 <div class="form-group">
-                    <label for="idcarrera">ID Carrera</label>
-                    <input type="text" class="form-control" id="idcarrera" value="{{carrera.idcarrera}}" disabled>
+                    <label for="idProfesor">ID del Profesor</label>
+                    <input type="text" class="form-control" id="idProfesor" value="{{profesor.idProfesor}}" disabled>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" name="carrera" value="{{carrera.carrera}}" placeholder="Nombre de Carrera" autofocus />
+                    <input type="text" class="form-control" name="profesor" value="{{profesor.profesor}}" placeholder="Nombre del Profesor" autofocus />
                 </div>
                 <div class="form-group">
                     <button class="btn btn-success btn-block">Guardar Cambios</button>
@@ -19,3 +19,4 @@
         </div>
     </div>
 </div>
+
