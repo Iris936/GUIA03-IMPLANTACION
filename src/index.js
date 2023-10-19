@@ -2,14 +2,20 @@ const express = require('express');
 const morgan = require('morgan');
 const exphbs = require('express-handlebars'); // Necesario para utilizar el motor de plantillas handlebars
 const path = require('path');
+const helpers = require('./helpers/helpers'); // Ruta al archivo helpers.js
+
 //Inicializaciones
  const app = express();
 
  require('dotenv').config()
 
  //Ajuste del servidor
- app.set('port', process.env.PORT || 4000);
+ app.set('port', process.env.PORT || 4500);
  app.set('views', path.join(__dirname, 'views')); // Configuracion de la ruta donde se encuentran las vistas
+ // Configuración de Handlebars
+
+ 
+ app.set('view engine', '.hbs');
  app.engine('.hbs', exphbs.engine({
     defaultLayout: 'main', // Configuracion del layout principal
     layoutsDir: path.join(app.get('views'), 'layouts'), // Configuracion de la ruta de los layouts
@@ -29,6 +35,7 @@ app.use('/estudiantes',require('./routes/estudiantes')); // Configuracion de rut
 app.use('/carreras', require('./routes/carreras')); 
 app.use('/profesores', require('./routes/profesores'));
 app.use('/materias', require('./routes/materias'));
+app.use('/grupos', require('./routes/grupos')); // Configuracion de ruta para grupos
 
 // Archivos publicos (aca se coloca todo el código al cual el navegador puede acceder)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -37,3 +44,4 @@ app.use(express.static(path.join(__dirname, 'public')));
  app.listen(app.get('port'), () =>{
     console.log('Servidor iniciando en el puerto: ', app.get('port'));
  });
+

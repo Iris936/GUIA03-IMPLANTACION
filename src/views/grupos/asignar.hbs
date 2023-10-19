@@ -1,0 +1,99 @@
+<div class="container p-4">
+    <h3>Asignar Alumnos</h3>
+    <form id="asignarForm">
+        <div class="form-group">
+            <label for="selectEstudiante">Seleccionar Alumno</label>
+            <select class="form-control" id="selectEstudiante" name="idestudiante" required>
+                {{#each estudiantes}}
+                    <option value="{{idestudiante}}" data-apellido="{{apellido}}">{{nombre}} {{apellido}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <button type="button" class="btn btn-success" id="agregarAlumno">Agregar Alumno</button>
+    </form>
+    <br>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Opciones</th>
+            </tr>
+        </thead>
+        <tbody id="alumnosTabla">
+            <!-- Aquí se mostrarán los alumnos seleccionados -->
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-primary" id="guardarAsignacion">Guardar Asignación</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const alumnosTabla = document.getElementById('alumnosTabla');
+    const selectEstudiante = document.getElementById('selectEstudiante');
+    const agregarAlumnoButton = document.getElementById('agregarAlumno');
+    const guardarAsignacionButton = document.getElementById('guardarAsignacion');
+
+    const alumnosSeleccionados = [];
+
+    agregarAlumnoButton.addEventListener('click', function() {
+        const idAlumno = selectEstudiante.value;
+        const nombreAlumno = selectEstudiante.options[selectEstudiante.selectedIndex].text;
+        const apellidoAlumno = selectEstudiante.options[selectEstudiante.selectedIndex].getAttribute('data-apellido');
+
+        // Agregar el alumno a la tabla temporal
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${idAlumno}</td>
+            <td>${nombreAlumno}</td>
+            <td>${apellidoAlumno}</td>
+            <td><button type="button" class="btn btn-danger btn-sm eliminarAlumno" data-id="${idAlumno}">Eliminar</button></td>
+        `;
+
+        alumnosTabla.appendChild(fila);
+
+        // Agregar el alumno a la lista de alumnos seleccionados
+        alumnosSeleccionados.push({ id: idAlumno, nombre: nombreAlumno, apellido: apellidoAlumno });
+
+        // Escuchar eventos para eliminar alumnos
+        const eliminarAlumnoButtons = document.querySelectorAll('.eliminarAlumno');
+        eliminarAlumnoButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const idEliminar = this.getAttribute('data-id');
+                const index = alumnosSeleccionados.findIndex(alumno => alumno.id === idEliminar);
+                if (index !== -1) {
+                    alumnosSeleccionados.splice(index, 1);
+                }
+                this.parentElement.parentElement.remove();
+            });
+        });
+    });
+
+    guardarAsignacionButton.addEventListener('click', function() {
+        // Enviar petición POST con alumnosSeleccionados
+        const idgrupo = {{idgrupo}}; // Id del grupo desde el contexto de Handlebars
+
+        const data = alumnosSeleccionados.map(alumno => {
+            return {
+                idgrupo,
+                idestudiante: alumno.id
+            };
+        });
+
+        fetch('/endpoint_de_asignacion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Asignación exitosa:', data);
+            // Puedes redirigir o hacer lo que necesites después de la asignación exitosa
+        })
+        .catch(error => console.error('Error al asignar alumnos:', error));
+    });
+});
+</script>

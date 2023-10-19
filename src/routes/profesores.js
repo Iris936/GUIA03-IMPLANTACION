@@ -2,6 +2,19 @@ const express = require('express');
 const router = express.Router();
 const profesoresRepository = require('../repositories/ProfesoresRepository');
 
+// Agrega esta función para formatear la fecha
+function formatDate(date) {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 // Obtener todos los profesores
 router.get('/', async (request, response) => {
     const profesores = await profesoresRepository.obtenerTodosLosProfesores();
@@ -15,8 +28,8 @@ router.get('/agregar', (request, response) => {
 
 // Agregar un nuevo profesor
 router.post('/agregar', async (request, response) => {
-    const { idProfesor, profesor } = request.body;
-    const nuevoProfesor = { idProfesor, profesor };
+    const { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email } = request.body;
+    const nuevoProfesor = { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email };
     const resultado = await profesoresRepository.insertarProfesor(nuevoProfesor);
     response.redirect('/profesores');
 });
@@ -31,8 +44,8 @@ router.get('/actualizar/:idProfesor', async (request, response) => {
 // Actualizar un profesor
 router.post('/actualizar/:idProfesor', async (request, response) => {
     const { idProfesor } = request.params;
-    const { profesor } = request.body;
-    const nuevoProfesor = { profesor };
+    const { profesor, apellido, fechanacimiento, profesion, genero, email } = request.body;
+    const nuevoProfesor = { profesor, apellido, fechanacimiento, profesion, genero, email };
 
     const resultado = await profesoresRepository.actualizarProfesor(idProfesor, nuevoProfesor);
 

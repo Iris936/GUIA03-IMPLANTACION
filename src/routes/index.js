@@ -5,6 +5,10 @@ const estudiantesRepository = require('../repositories/EstudianteRepository');
 const carrerasQuery = require('../repositories/CarreraRepository');
 const profesoresRepository = require('../repositories/ProfesoresRepository');
 const materiasRepository = require('../repositories/MateriasRepository'); // Agregado
+const grupoRepository = require('../repositories/GrupoRepository');
+const materiasQuery = require('../repositories/MateriasRepository'); // Agregado
+const profesoresQuery = require('../repositories/ProfesoresRepository'); // Agregado
+
 
 // Mostrar todos los estudiantes
 router.get('/', async (request, response) => {
@@ -96,8 +100,8 @@ router.get('/profesores/agregar', (request, response) => {
 });
 
 router.post('/profesores/agregar', async (request, response) => {
-    const { idProfesor, profesor } = request.body;
-    const nuevoProfesor = { idProfesor, profesor };
+    const { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email } = request.body;
+    const nuevoProfesor = { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email };
     const resultado = await profesoresRepository.insertarProfesor(nuevoProfesor);
     response.redirect('/profesores');
 });
@@ -146,12 +150,6 @@ router.post('/agregar', async (request, response) => {
     response.redirect('/materias');
 });
 
-// Mostrar formulario para actualizar una materia
-router.get('/actualizar/:idMateria', async (request, response) => {
-    const { idMateria } = request.params;
-    const materia = await materiaRepository.obtenerMateriaPorId(idMateria);
-    response.render('materias/actualizar', { materia });
-});
 
 router.get('/actualizar/:idMateria', async (request, response) => {
     const { idMateria } = request.params;
@@ -180,6 +178,94 @@ router.get('/eliminar/:idMateria', async (request, response) => {
     }
     response.redirect('/materias');
 });
+// Obtener todos los grupos
+router.get('/grupos', async (request, response) => {
+    const grupos = await grupoRepository.obtenerTodosLosGrupos();
+    response.render('grupos/listado', { grupos });
+});
+
+// Mostrar formulario para agregar un nuevo grupo
+router.get('/grupos/agregar', async(request, response) => {
+    const lstMaterias = await materiasRepository.obtenerTodasLasMaterias();  // Cambiado de materiasQuery a materiasRepository
+    const lstProfesores = await profesoresRepository.obtenerTodosLosProfesores();
+    response.render('grupos/agregar', { lstMaterias, lstProfesores });
+});
+
+// Agregar un grupo
+router.post('/grupos/agregar', async(request, response) => {
+    const { num_grupo, anio, ciclo, idMateria, idProfesor } = request.body;
+    const nuevoGrupo = { num_grupo, anio, ciclo, idMateria, idProfesor };
+    const resultado = await grupoRepository.insertarGrupo(nuevoGrupo);  // Cambiado de queries a grupoRepository
+    response.redirect('/grupos');
+});
+
+// Actualizar un grupo
+router.post('/grupos/actualizar/:idgrupo', async (request, response) => {
+    const { idgrupo } = request.params;
+    const { num_grupo, anio, ciclo, idMateria, idProfesor } = request.body;
+    const actualizacionGrupo = { num_grupo, anio, ciclo, idMateria, idProfesor };
+
+    const resultado = await grupoRepository.actualizarGrupo(idgrupo, actualizacionGrupo);
+
+    response.redirect('/grupos');
+});
+
+router.get('/grupos/actualizar/:idgrupo', async (request, response) => {
+    const { idgrupo } = request.params;
+    const grupo = await grupoRepository.obtenerGrupoPorID(idgrupo);
+    console.log("mira la wea del objeto grupo : " + grupo.idMateria + " profesor¨: " + grupo.idProfesor);
+    const lstMaterias = await materiasRepository.obtenerTodasLasMaterias();
+    const lstProfesores = await profesoresRepository.obtenerTodosLosProfesores();
+    console.log("Lista de Materias:", lstMaterias);
+    console.log("Lista de Profesores:", lstProfesores);
+    response.render('grupos/actualizar', { grupo, lstMaterias, lstProfesores });
+});
+
+// Eliminar un grupo
+router.get('/grupos/eliminar/:idgrupo', async (request, response) => {
+    const { idgrupo } = request.params;
+    const resultado = await grupoRepository.eliminarGrupo(idgrupo);
+    if (resultado > 0) {
+        console.log('Grupo eliminado con éxito');
+    }
+    response.redirect('/grupos');
+});
+
+//Asignar
+router.get('/grupos/asignar/:idgrupo', async (request, response) => {
+    try {
+      const { idgrupo } = request.params;
+  
+      // 1. Obtener la lista de todos los estudiantes
+      const estudiantes = await grupoRepository.obtenerTodosLosEstudiantes();
+  
+      // 2. Obtener la información del grupo con el ID proporcionado
+      const grupo = await grupoRepository.obtenerGrupoPorID(idgrupo);
+  
+      // Renderizar la plantilla asignar.hbs y pasar la lista de estudiantes y la información del grupo
+      response.render('grupos/asignar', { estudiantes, grupo });
+    } catch (error) {
+      response.status(500).send("Ocurrió un error al mostrar la página de asignación");
+    }
+  });
+
+  router.post('/grupos/asignar/:idgrupo', async (request, response) => {
+    try {
+      const { idgrupo } = request.params;
+      const { idestudiante } = request.body;
+  
+      const resultado = await grupoRepository.asignarEstudianteAGrupo(idgrupo, idestudiante);
+  
+      if (resultado) {
+        console.log('Estudiante asignado al grupo con éxito');
+      } else {
+        console.log('No se pudo asignar al estudiante al grupo');
+      }
+  
+      response.redirect(`/grupos/asignar/${idgrupo}`);
+    } catch (error) {
+      response.status(500).send("Ocurrió un error al asignar el alumno");
+    }
+  });
 
 module.exports = router;
-

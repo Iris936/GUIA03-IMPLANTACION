@@ -3,7 +3,7 @@ const pool = require('../config/databaseController');
 module.exports = {
     obtenerTodosLosEstudiantes: async() => {
         try {
-            const result = await pool.query('SELECT * FROM estudiante');
+            const result = await pool.query('SELECT * FROM estudiantes');
             return result;
         } catch (error) {
             console.error('Ocurrió un problema al consultar la lista de estudiantes: ', error);
@@ -12,7 +12,7 @@ module.exports = {
 
     obtenerEstudiantePorId: async (idestudiante) => {
         try {
-            const result = await pool.query('SELECT * FROM estudiante WHERE idestudiante = ?', [idestudiante]);
+            const result = await pool.query('SELECT * FROM estudiantes WHERE idestudiante = ?', [idestudiante]);
             return result[0]; // Devuelve el primer resultado (si hay alguno)
         } catch (error) {
             console.error('Error al obtener el estudiante por ID', error);
@@ -22,7 +22,7 @@ module.exports = {
 
     eliminarEstudiante: async(idestudiante) => {
         try {
-            const result = await pool.query('DELETE FROM estudiante WHERE idestudiante = ?', [idestudiante]);
+            const result = await pool.query('DELETE FROM estudiantes WHERE idestudiante = ?', [idestudiante]);
             return result.affectedRows > 0;
         } catch (error) {
             console.error('Error al eliminar el registro', error);
@@ -31,7 +31,7 @@ module.exports = {
 
     insertarEstudiante: async(nuevoEstudiante) => {
         try {
-            const result = await pool.query("INSERT INTO estudiante SET ? ", nuevoEstudiante);
+            const result = await pool.query("INSERT INTO estudiantes SET ? ", nuevoEstudiante);
             return result.insertId;
         } catch (error) {
             console.error('Error al insertar el registro', error);
@@ -40,10 +40,11 @@ module.exports = {
 
     actualizarEstudiante: async (idestudiante, nuevoEstudiante) => {
         try {
-            const result = await pool.query('UPDATE estudiante SET ? WHERE idestudiante = ?', [nuevoEstudiante, idestudiante]);
+            const result = await pool.query('UPDATE estudiantes SET ? WHERE idestudiante = ?', [nuevoEstudiante, idestudiante]);
             return result.affectedRows > 0;
         } catch (error) {
             console.error('Error al actualizar el estudiante', error);
         }
     }
 };
+

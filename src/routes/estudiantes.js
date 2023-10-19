@@ -9,7 +9,6 @@ router.get('/', async (request, response) => {
 
      response.render('estudiantes/listado', {estudiantes}); // Mostramos el listado de estudiantes
 });
-
 // Endpoint que permite mostrar el formulario para actualizar un estudiante
 router.get('/actualizar/:idestudiante', async (request, response) => {
     try {
@@ -75,3 +74,4 @@ router.post('/actualizar/:idestudiante', async (request, response) => {
 });
 
 module.exports = router;
+

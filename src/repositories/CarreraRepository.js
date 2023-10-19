@@ -2,6 +2,7 @@ const pool = require('../config/databaseController');
 
 module.exports = {
 
+    // Consulta para obtener todos las carreras
     obtenerTodosLasCarreras: async() => {
         try {
             const result = await pool.query('SELECT * FROM carreras');
@@ -48,4 +49,3 @@ module.exports = {
         }
     }
 }
-

@@ -1,7 +1,6 @@
 const pool = require('../config/databaseController');
 
 module.exports = {
-    
     obtenerTodasLasMaterias: async () => {
         try {
             const result = await pool.query('SELECT * FROM materias');

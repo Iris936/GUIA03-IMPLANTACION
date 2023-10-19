@@ -38,7 +38,6 @@ router.post('/actualizar/:idMateria', async (request, response) => {
 
     response.redirect('/materias');
 });
-
 router.get('/actualizar/:idMateria', async (request, response) => {
     const { idMateria } = request.params;
     const materia = await materiaRepository.obtenerMateriaPorId(idMateria);

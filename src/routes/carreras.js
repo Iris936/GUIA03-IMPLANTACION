@@ -50,4 +50,3 @@ router.get('/eliminar/:idcarrera', async (request, response) => {
 });
 
 module.exports = router;
-
