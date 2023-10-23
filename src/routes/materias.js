@@ -18,6 +18,20 @@ router.post('/agregar', async (request, response) => {
     const { idMateria, materia } = request.body;
     const nuevaMateria = { idMateria, materia };
     const resultado = await materiaRepository.insertarMateria(nuevaMateria);
+
+    if (resultado) {
+
+        request.flash('error', 'Ocurrió un problema al guardar el registro ');
+
+        console.log('ok');
+
+    } else {
+
+        request.flash('success', 'Registro insertado con éxito');
+
+        console.log('ok1');
+
+    }
     response.redirect('/materias');
 });
 
@@ -36,6 +50,12 @@ router.post('/actualizar/:idMateria', async (request, response) => {
 
     const resultado = await materiaRepository.actualizarMateria(idMateria, nuevaMateria);
 
+    if(resultado){
+        request.flash('success', 'Registro actualizado con exito');
+     } else {
+        request.flash('error', 'Ocurrio un problema al actualizar el registro');
+     }
+
     response.redirect('/materias');
 });
 router.get('/actualizar/:idMateria', async (request, response) => {
@@ -50,7 +70,9 @@ router.get('/eliminar/:idMateria', async (request, response) => {
     const { idMateria } = request.params;
     const resultado = await materiaRepository.eliminarMateria(idMateria);
     if (resultado > 0) {
-        console.log('Materia eliminada con éxito');
+        request.flash('success', 'Eliminacion correcta');
+    } else {
+        request.flash('error', 'Error al eliminar');
     }
     response.redirect('/materias');
 });

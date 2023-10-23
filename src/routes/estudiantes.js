@@ -36,6 +36,19 @@ router.post('/agregar', async(request, response) => {
     const nuevoEstudiante = { idestudiante, nombre, apellido, email, idcarrera, usuario };
 
     const resultado = await queries.insertarEstudiante(nuevoEstudiante);
+    if (resultado) {
+
+        request.flash('error', 'Ocurrió un problema al guardar el registro ');
+
+        console.log('ok');
+
+    } else {
+
+        request.flash('success', 'Registro insertado con éxito');
+
+        console.log('ok1');
+
+    }
 
     response.redirect('/estudiantes');
 });
@@ -45,8 +58,10 @@ router.get('/eliminar/:idestudiante', async(request, response) => {
     // Desestructuramos el objeto que nos mandan en la peticion y extraemos el idestudiante
     const { idestudiante } = request.params;
     const resultado = await queries.eliminarEstudiante(idestudiante);
-    if(resultado > 0){
-        console.log('Eliminado con éxito');
+     if (resultado > 0) {
+        request.flash('success', 'Eliminacion correcta');
+    } else {
+        request.flash('error', 'Error al eliminar');
     }
     response.redirect('/estudiantes');
 });
@@ -67,9 +82,11 @@ router.post('/actualizar/:idestudiante', async (request, response) => {
 
     const resultado = await queries.actualizarEstudiante(idestudiante, nuevoEstudiante);
 
-    if (resultado) {
-        console.log('Estudiante actualizado con éxito');
-    }
+    if(resultado){
+        request.flash('success', 'Registro actualizado con exito');
+     } else {
+        request.flash('error', 'Ocurrio un problema al actualizar el registro');
+     }
     response.redirect('/estudiantes');
 });
 

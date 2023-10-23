@@ -4,18 +4,26 @@ const exphbs = require('express-handlebars'); // Necesario para utilizar el moto
 const path = require('path');
 const helpers = require('./helpers/helpers'); // Ruta al archivo helpers.js
 
+const flash = require('connect-flash'); // Nos permite manejar mensajes en la sesion los cuales se guardan en memoria
+// y se borran luego de ser mostrados
+const session = require('express-session'); // Permite manejar sesiones, por ejemplo, para almacenar datos en la
+// memoria del servidor, tambien se puede almacenar en la base de datos.
+const MySQLStore = require('express-mysql-session')(session);
+
 //Inicializaciones
  const app = express();
 
  require('dotenv').config()
+ const { database } = require('./config/keys');
 
  //Ajuste del servidor
- app.set('port', process.env.PORT || 4500);
+ app.set('port', process.env.PORT || 4000);
  app.set('views', path.join(__dirname, 'views')); // Configuracion de la ruta donde se encuentran las vistas
  // Configuración de Handlebars
 
  
  app.set('view engine', '.hbs');
+
  app.engine('.hbs', exphbs.engine({
     defaultLayout: 'main', // Configuracion del layout principal
     layoutsDir: path.join(app.get('views'), 'layouts'), // Configuracion de la ruta de los layouts
@@ -27,15 +35,32 @@ const helpers = require('./helpers/helpers'); // Ruta al archivo helpers.js
 
 app.set('view engine', '.hbs'); // Configuracion para ejecutar el motor de plantillas
 
+ // ===== MIDDLEWARES ===
+ app.use(session({
+   secret: process.env.SESSION_KEY, // Esta es la clave secreta de la sesion
+   resave: false, // Para que no renueve la sesion
+   saveUninitialized: false, // se deja en false para que no vuelva a establecer  la sesion
+   store: new MySQLStore(database) // Se indica donde se debe guardar la sesion
+   }));
+   
+   app.use(flash());
+
 app.use(morgan('dev')); // Configurando el middleware morgan para visualizar que esta llegando al servidor
-app.use(express.urlencoded({extended: false})); // Sirve para poder aceptar datos desde formularios
+app.use(express.urlencoded({extended: false })); // Sirve para poder aceptar datos desde formularios
+// ==== VARIABLES GLOBALES =====
+app.use((request, response, next) => {
+// Haciendo global el uso de flash
+app.locals.success = request.flash('success');
+app.locals.error = request.flash('error');
+next(); // permite continuar con la ejecucion del código
+});
 
 app.use(require('./routes'));
 app.use('/estudiantes',require('./routes/estudiantes')); // Configuracion de ruta para estudiantes
 app.use('/carreras', require('./routes/carreras')); 
 app.use('/profesores', require('./routes/profesores'));
 app.use('/materias', require('./routes/materias'));
-app.use('/grupos', require('./routes/grupos')); // Configuracion de ruta para grupos
+app.use('/grupos', require('./routes/grupos')) // Configuracion de ruta para grupos
 
 // Archivos publicos (aca se coloca todo el código al cual el navegador puede acceder)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -44,4 +69,3 @@ app.use(express.static(path.join(__dirname, 'public')));
  app.listen(app.get('port'), () =>{
     console.log('Servidor iniciando en el puerto: ', app.get('port'));
  });
-

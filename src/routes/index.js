@@ -9,7 +9,6 @@ const grupoRepository = require('../repositories/GrupoRepository');
 const materiasQuery = require('../repositories/MateriasRepository'); // Agregado
 const profesoresQuery = require('../repositories/ProfesoresRepository'); // Agregado
 
-
 // Mostrar todos los estudiantes
 router.get('/', async (request, response) => {
     const estudiantes = await estudiantesRepository.obtenerTodosLosEstudiantes();
@@ -232,40 +231,44 @@ router.get('/grupos/eliminar/:idgrupo', async (request, response) => {
 });
 
 //Asignar
-router.get('/grupos/asignar/:idgrupo', async (request, response) => {
-    try {
-      const { idgrupo } = request.params;
-  
-      // 1. Obtener la lista de todos los estudiantes
-      const estudiantes = await grupoRepository.obtenerTodosLosEstudiantes();
-  
-      // 2. Obtener la información del grupo con el ID proporcionado
-      const grupo = await grupoRepository.obtenerGrupoPorID(idgrupo);
-  
-      // Renderizar la plantilla asignar.hbs y pasar la lista de estudiantes y la información del grupo
-      response.render('grupos/asignar', { estudiantes, grupo });
-    } catch (error) {
-      response.status(500).send("Ocurrió un error al mostrar la página de asignación");
-    }
-  });
+// ... (otras importaciones y configuraciones)
 
-  router.post('/grupos/asignar/:idgrupo', async (request, response) => {
+router.post('/grupos/asignar', async (req, res) => {
     try {
-      const { idgrupo } = request.params;
-      const { idestudiante } = request.body;
-  
-      const resultado = await grupoRepository.asignarEstudianteAGrupo(idgrupo, idestudiante);
-  
-      if (resultado) {
-        console.log('Estudiante asignado al grupo con éxito');
-      } else {
-        console.log('No se pudo asignar al estudiante al grupo');
-      }
-  
-      response.redirect(`/grupos/asignar/${idgrupo}`);
+        const idgrupo = req.body.idgrupo;
+        const alumnos = JSON.parse(req.body.alumnos);
+
+        // Primero, puedes realizar alguna validación o procesamiento de los datos.
+
+        // Luego, puedes insertar los alumnos en el grupo en tu base de datos.
+        for (const alumno of alumnos) {
+            const idestudiante = alumno.idEstudiante;
+
+            // Aquí puedes utilizar tu función de inserción de estudiantes en grupos.
+            // Por ejemplo, si tienes una función llamada `insertarEstudianteEnGrupo` en tu repositorio,
+            // podrías usarla de la siguiente manera:
+
+            const exito = await queries.insertarEstudianteEnGrupo(idestudiante, idgrupo);
+
+            if (!exito) {
+                console.error(`Error al asignar estudiante ${idestudiante} al grupo ${idgrupo}`);
+                // Aquí puedes manejar el error de alguna manera.
+            }
+        }
+
+        // Una vez completada la asignación, puedes redirigir o enviar una respuesta JSON, según tu aplicación.
+        res.redirect('/grupos'); // Por ejemplo, puedes redirigir de vuelta a la lista de grupos.
     } catch (error) {
-      response.status(500).send("Ocurrió un error al asignar el alumno");
+        console.error('Error al procesar la asignación de alumnos:', error);
+        res.status(500).send('Ocurrió un error al asignar alumnos al grupo');
     }
-  });
+});
+
+router.get('/grupos/asignar/:idgrupo', async (request, response) => {
+    const { idgrupo } = request.params;
+    // Obtener todos los estudiantes
+    const estudiantes = await estudiantesRepository.obtenerTodosLosEstudiantes();
+    response.render('grupos/asignar', { idgrupo, estudiantes });
+});
 
 module.exports = router;
