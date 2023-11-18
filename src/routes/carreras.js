@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const queries = require('../repositories/CarreraRepository');
+const { isLoggedIn } = require('../lib/auth');
+
+
 
 // Consulta para obtener todos las carreras
-router.get('/', async (request, response) => {
+router.get('/', isLoggedIn , async (request, response) => {
     const carreras = await queries.obtenerTodosLasCarreras();
     response.render('carrera/listado', { carreras });
 });
@@ -14,7 +17,7 @@ router.get('/agregar', (request, response) => {
 });
 
 // Agregar una nueva carrera
-router.post('/mantenimiento', async (request, response) => {
+router.post('/mantenimiento', isLoggedIn, async (request, response) => {
     const { idcarrera, carrera } = request.body;
     const nuevaCarrera = { idcarrera, carrera };
     const resultado = await queries.insertarCarrera(nuevaCarrera);
@@ -36,14 +39,14 @@ router.post('/mantenimiento', async (request, response) => {
     response.redirect('/carreras');
 });
 
-router.get('/actualizar/:idcarrera', async (request, response) => {
+router.get('/actualizar/:idcarrera', isLoggedIn , async (request, response) => {
     const { idcarrera } = request.params;
     const carrera = await queries.obtenerCarreraPorId(idcarrera);
     response.render('carreras/actualizar', { carrera }); // Cambia 'carrera' a 'carreras'
 });
 
 // Actualizar una carrera
-router.post('/actualizar/:idcarrera', async (request, response) => {
+router.post('/actualizar/:idcarrera',isLoggedIn , async (request, response) => {
     const { idcarrera } = request.params;
     const { carrera } = request.body;
     const nuevaCarrera = { carrera };
@@ -60,7 +63,7 @@ router.post('/actualizar/:idcarrera', async (request, response) => {
 });
 
 // Endpoint que permite eliminar una carrera
-router.get('/eliminar/:idcarrera', async (request, response) => {
+router.get('/eliminar/:idcarrera', isLoggedIn ,async (request, response) => {
     // Desestructuramos el objeto que nos mandan en la peticion y extraemos el 
     idcarrera
     const { idcarrera } = request.params;

@@ -9,20 +9,30 @@ const grupoRepository = require('../repositories/GrupoRepository');
 const materiasQuery = require('../repositories/MateriasRepository'); // Agregado
 const profesoresQuery = require('../repositories/ProfesoresRepository'); // Agregado
 
+// Este archivo sera utilizado para configurar todas las rutas principales del sistema
+const estudianteRepository = require('../repositories/EstudianteRepository');
+const { isLoggedIn } = require('../lib/auth');
+// Configuracion de ruta inicial de la aplicacion
+router.get('/', isLoggedIn, async (request,response) => {
+response.render('home/home');
+});
+module.exports = router;
+
+
 // Mostrar todos los estudiantes
-router.get('/', async (request, response) => {
+router.get('/', isLoggedIn ,async (request, response) => {
     const estudiantes = await estudiantesRepository.obtenerTodosLosEstudiantes();
     response.render('estudiantes/listado', { estudiantes });
 });
 
 // Mostrar formulario para agregar un nuevo estudiante
-router.get('/agregar', async(request, response) => {
+router.get('/agregar',isLoggedIn , async(request, response) => {
     const lstCarreras = await carrerasQuery.obtenerTodosLasCarreras();
     response.render('estudiantes/agregar', { lstCarreras });
 });
 
 // Agregar un estudiante
-router.post('/agregar', async(request, response) => {
+router.post('/agregar', isLoggedIn ,async(request, response) => {
     const { idestudiante, nombre, apellido, email, idcarrera, usuario } = request.body;
     const nuevoEstudiante = { idestudiante, nombre, apellido, email, idcarrera, usuario };
     const resultado = await estudiantesRepository.insertarEstudiante(nuevoEstudiante);
@@ -30,7 +40,7 @@ router.post('/agregar', async(request, response) => {
 });
 
 // Eliminar un estudiante
-router.get('/eliminar/:idestudiante', async(request, response) => {
+router.get('/eliminar/:idestudiante', isLoggedIn ,async(request, response) => {
     const { idestudiante } = request.params;
     const resultado = await estudiantesRepository.eliminarEstudiante(idestudiante);
     if(resultado > 0){
@@ -39,7 +49,7 @@ router.get('/eliminar/:idestudiante', async(request, response) => {
     response.redirect('/estudiantes');
 });
 // Mostrar formulario para actualizar un estudiante
-router.get('/actualizar/:idestudiante', async (request, response) => {
+router.get('/actualizar/:idestudiante', isLoggedIn ,async (request, response) => {
     const { idestudiante } = request.params;
     const estudiante = await estudiantesRepository.obtenerEstudiantePorId(idestudiante);
     const lstCarreras = await carrerasQuery.obtenerTodosLasCarreras();
@@ -47,7 +57,7 @@ router.get('/actualizar/:idestudiante', async (request, response) => {
 });
 
 // Actualizar un estudiante
-router.post('/actualizar/:idestudiante', async (request, response) => {
+router.post('/actualizar/:idestudiante',isLoggedIn , async (request, response) => {
     const { idestudiante } = request.params;
     const { nombre, apellido, email, idcarrera, usuario } = request.body;
     const nuevoEstudiante = { nombre, apellido, email, idcarrera, usuario };
@@ -61,7 +71,7 @@ router.post('/actualizar/:idestudiante', async (request, response) => {
 });
 
 // Mostrar todos las carreras
-router.get('/carreras', async (request, response) => {
+router.get('/carreras', isLoggedIn ,async (request, response) => {
     const carreras = await carrerasQuery.obtenerTodosLasCarreras();
     response.render('carreras/listado', { carreras });
 });
@@ -72,7 +82,7 @@ router.get('/carreras/agregar', (request, response) => {
 });
 
 // Agregar una carrera
-router.post('/carreras/agregar', async(request, response) => {
+router.post('/carreras/agregar',isLoggedIn , async(request, response) => {
     const { idcarrera, carrera } = request.body;
     const nuevaCarrera = { idcarrera, carrera };
     const resultado = await carrerasQuery.insertarCarrera(nuevaCarrera);
@@ -80,7 +90,7 @@ router.post('/carreras/agregar', async(request, response) => {
 });
 
 // Eliminar una carrera
-router.get('/carreras/eliminar/:idcarrera', async(request, response) => {
+router.get('/carreras/eliminar/:idcarrera',isLoggedIn , async(request, response) => {
     const { idcarrera } = request.params;
     const resultado = await carrerasQuery.eliminarCarrera(idcarrera);
     if(resultado > 0){
@@ -89,7 +99,7 @@ router.get('/carreras/eliminar/:idcarrera', async(request, response) => {
     response.redirect('/carreras');
 });
 
-router.get('/profesores', async (request, response) => {
+router.get('/profesores', isLoggedIn ,async (request, response) => {
     const profesores = await profesoresRepository.obtenerTodosLosProfesores();
     response.render('profesores/listado', { profesores });
 });
@@ -98,7 +108,7 @@ router.get('/profesores/agregar', (request, response) => {
     response.render('profesores/agregar');
 });
 
-router.post('/profesores/agregar', async (request, response) => {
+router.post('/profesores/agregar',isLoggedIn , async (request, response) => {
     const { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email } = request.body;
     const nuevoProfesor = { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email };
     const resultado = await profesoresRepository.insertarProfesor(nuevoProfesor);
@@ -111,7 +121,7 @@ router.get('/actualizar/:idProfesor', async (request, response) => {
     response.render('profesores/actualizar', { profesor });
 });
 
-router.post('/actualizar/:idProfesor', async (request, response) => {
+router.post('/actualizar/:idProfesor',isLoggedIn , async (request, response) => {
     const { idProfesor } = request.params;
     const { profesor } = request.body;
     const nuevoProfesor = { profesor };
@@ -121,7 +131,7 @@ router.post('/actualizar/:idProfesor', async (request, response) => {
     response.redirect('/profesores');
 });
 
-router.get('/eliminar/:idProfesor', async (request, response) => {
+router.get('/eliminar/:idProfesor', isLoggedIn ,async (request, response) => {
     const { idProfesor } = request.params;
     const resultado = await profesoresRepository.eliminarProfesor(idProfesor);
     if (resultado > 0) {
@@ -131,7 +141,7 @@ router.get('/eliminar/:idProfesor', async (request, response) => {
 });
 
 // Obtener todas las materias
-router.get('/', async (request, response) => {
+router.get('/',isLoggedIn , async (request, response) => {
     const materias = await materiaRepository.obtenerTodasLasMaterias();
     response.render('materias/listado', { materias });
 });
@@ -142,7 +152,7 @@ router.get('/agregar', (request, response) => {
 });
 
 // Agregar una nueva materia
-router.post('/agregar', async (request, response) => {
+router.post('/agregar',isLoggedIn ,   async (request, response) => {
     const { idMateria, materia } = request.body;
     const nuevaMateria = { idMateria, materia };
     const resultado = await materiaRepository.insertarMateria(nuevaMateria);
@@ -150,7 +160,7 @@ router.post('/agregar', async (request, response) => {
 });
 
 
-router.get('/actualizar/:idMateria', async (request, response) => {
+router.get('/actualizar/:idMateria', isLoggedIn ,async (request, response) => {
     const { idMateria } = request.params;
     console.log('ID de la Materia:', idMateria); // Verifica si el ID se obtiene correctamente
     const materia = await materiaRepository.obtenerMateriaPorId(idMateria);
@@ -158,7 +168,7 @@ router.get('/actualizar/:idMateria', async (request, response) => {
 });
 
 // Actualizar una materia
-router.post('/actualizar/:idMateria', async (request, response) => {
+router.post('/actualizar/:idMateria',isLoggedIn , async (request, response) => {
     const { idMateria } = request.params;
     const { materia } = request.body;
     const nuevaMateria = { materia };
@@ -169,7 +179,7 @@ router.post('/actualizar/:idMateria', async (request, response) => {
 });
 
 // Eliminar una materia
-router.get('/eliminar/:idMateria', async (request, response) => {
+router.get('/eliminar/:idMateria',isLoggedIn , async (request, response) => {
     const { idMateria } = request.params;
     const resultado = await materiaRepository.eliminarMateria(idMateria);
     if (resultado > 0) {
@@ -178,20 +188,20 @@ router.get('/eliminar/:idMateria', async (request, response) => {
     response.redirect('/materias');
 });
 // Obtener todos los grupos
-router.get('/grupos', async (request, response) => {
+router.get('/grupos', isLoggedIn ,async (request, response) => {
     const grupos = await grupoRepository.obtenerTodosLosGrupos();
     response.render('grupos/listado', { grupos });
 });
 
 // Mostrar formulario para agregar un nuevo grupo
-router.get('/grupos/agregar', async(request, response) => {
+router.get('/grupos/agregar', isLoggedIn ,async(request, response) => {
     const lstMaterias = await materiasRepository.obtenerTodasLasMaterias();  // Cambiado de materiasQuery a materiasRepository
     const lstProfesores = await profesoresRepository.obtenerTodosLosProfesores();
     response.render('grupos/agregar', { lstMaterias, lstProfesores });
 });
 
 // Agregar un grupo
-router.post('/grupos/agregar', async(request, response) => {
+router.post('/grupos/agregar', isLoggedIn ,async(request, response) => {
     const { num_grupo, anio, ciclo, idMateria, idProfesor } = request.body;
     const nuevoGrupo = { num_grupo, anio, ciclo, idMateria, idProfesor };
     const resultado = await grupoRepository.insertarGrupo(nuevoGrupo);  // Cambiado de queries a grupoRepository
@@ -199,7 +209,7 @@ router.post('/grupos/agregar', async(request, response) => {
 });
 
 // Actualizar un grupo
-router.post('/grupos/actualizar/:idgrupo', async (request, response) => {
+router.post('/grupos/actualizar/:idgrupo', isLoggedIn ,async (request, response) => {
     const { idgrupo } = request.params;
     const { num_grupo, anio, ciclo, idMateria, idProfesor } = request.body;
     const actualizacionGrupo = { num_grupo, anio, ciclo, idMateria, idProfesor };
@@ -209,7 +219,7 @@ router.post('/grupos/actualizar/:idgrupo', async (request, response) => {
     response.redirect('/grupos');
 });
 
-router.get('/grupos/actualizar/:idgrupo', async (request, response) => {
+router.get('/grupos/actualizar/:idgrupo', isLoggedIn ,async (request, response) => {
     const { idgrupo } = request.params;
     const grupo = await grupoRepository.obtenerGrupoPorID(idgrupo);
     console.log("mira la wea del objeto grupo : " + grupo.idMateria + " profesor¨: " + grupo.idProfesor);
@@ -221,7 +231,7 @@ router.get('/grupos/actualizar/:idgrupo', async (request, response) => {
 });
 
 // Eliminar un grupo
-router.get('/grupos/eliminar/:idgrupo', async (request, response) => {
+router.get('/grupos/eliminar/:idgrupo',isLoggedIn , async (request, response) => {
     const { idgrupo } = request.params;
     const resultado = await grupoRepository.eliminarGrupo(idgrupo);
     if (resultado > 0) {
@@ -233,7 +243,7 @@ router.get('/grupos/eliminar/:idgrupo', async (request, response) => {
 //Asignar
 // ... (otras importaciones y configuraciones)
 
-router.post('/grupos/asignar', async (req, res) => {
+router.post('/grupos/asignar',isLoggedIn , async (req, res) => {
     try {
         const idgrupo = req.body.idgrupo;
         const alumnos = JSON.parse(req.body.alumnos);
@@ -264,7 +274,7 @@ router.post('/grupos/asignar', async (req, res) => {
     }
 });
 
-router.get('/grupos/asignar/:idgrupo', async (request, response) => {
+router.get('/grupos/asignar/:idgrupo', isLoggedIn ,async (request, response) => {
     const { idgrupo } = request.params;
     // Obtener todos los estudiantes
     const estudiantes = await estudiantesRepository.obtenerTodosLosEstudiantes();
@@ -272,3 +282,5 @@ router.get('/grupos/asignar/:idgrupo', async (request, response) => {
 });
 
 module.exports = router;
+
+

@@ -6,8 +6,10 @@ const estudiantesQuery = require("../repositories/EstudianteRepository");
 const profesoresQuery = require("../repositories/ProfesoresRepository"); // Agregado
 const axios = require("axios"); // Asegúrate de tener instalada la librería 'axios'
 const GrupoRepository = require("../repositories/GrupoRepository");
+const { isLoggedIn } = require('../lib/auth');
 
-router.get("/", async (request, response) => {
+
+router.get("/", isLoggedIn ,async (request, response) => {
   try {
     const grupos = await queries.obtenerTodosLosGrupos();
     response.render("grupos/listado", { grupos });
@@ -16,7 +18,7 @@ router.get("/", async (request, response) => {
   }
 });
 
-router.get("/agregar", async (request, response) => {
+router.get("/agregar",isLoggedIn , async (request, response) => {
   try {
     // Obtener lista de materias y profesores
     const lstMaterias = await materiasQuery.obtenerTodasLasMaterias();
@@ -29,7 +31,7 @@ router.get("/agregar", async (request, response) => {
   }
 });
 
-router.post("/agregar", async (request, response) => {
+router.post("/agregar", isLoggedIn ,async (request, response) => {
   try {
     const { num_grupo, anio, ciclo, idMateria, idProfesor } = request.body;
     const nuevoGrupo = { num_grupo, anio, ciclo, idMateria, idProfesor };
@@ -58,7 +60,7 @@ router.get("/grupos/actualizar/:idgrupo", async (request, response) => {
   }
 });
 
-router.post("/grupos/actualizar/:idgrupo", async (request, response) => {
+router.post("/grupos/actualizar/:idgrupo", isLoggedIn ,async (request, response) => {
   try {
     const { idgrupo } = request.params;
     const { num_grupo, anio, ciclo, idMateria, idProfesor } = request.body;
@@ -78,7 +80,7 @@ router.post("/grupos/actualizar/:idgrupo", async (request, response) => {
   }
 });
 
-router.get("/eliminar/:idgrupo", async (request, response) => {
+router.get("/eliminar/:idgrupo", isLoggedIn , async (request, response) => {
   try {
     const { idgrupo } = request.params;
     await queries.eliminarGrupo(idgrupo);

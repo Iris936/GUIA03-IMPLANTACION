@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const profesoresRepository = require('../repositories/ProfesoresRepository');
+const { isLoggedIn } = require('../lib/auth');
+
 
 // Agrega esta función para formatear la fecha
 function formatDate(date) {
@@ -16,7 +18,7 @@ function formatDate(date) {
 }
 
 // Obtener todos los profesores
-router.get('/', async (request, response) => {
+router.get('/', isLoggedIn ,async (request, response) => {
     const profesores = await profesoresRepository.obtenerTodosLosProfesores();
     response.render('profesores/listado', { profesores });
 });
@@ -27,7 +29,7 @@ router.get('/agregar', (request, response) => {
 });
 
 // Agregar un nuevo profesor
-router.post('/agregar', async (request, response) => {
+router.post('/agregar', isLoggedIn ,async (request, response) => {
     const { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email } = request.body;
     const nuevoProfesor = { idProfesor, profesor, apellido, fechanacimiento, profesion, genero, email };
     const resultado = await profesoresRepository.insertarProfesor(nuevoProfesor);
@@ -50,14 +52,14 @@ router.post('/agregar', async (request, response) => {
 });
 
 // Mostrar formulario para actualizar un profesor
-router.get('/actualizar/:idProfesor', async (request, response) => {
+router.get('/actualizar/:idProfesor', isLoggedIn ,async (request, response) => {
     const { idProfesor } = request.params;
     const profesor = await profesoresRepository.obtenerProfesorPorId(idProfesor);
     response.render('profesores/actualizar', { profesor });
 });
 
 // Actualizar un profesor
-router.post('/actualizar/:idProfesor', async (request, response) => {
+router.post('/actualizar/:idProfesor', isLoggedIn ,async (request, response) => {
     const { idProfesor } = request.params;
     const { profesor, apellido, fechanacimiento, profesion, genero, email } = request.body;
     const nuevoProfesor = { profesor, apellido, fechanacimiento, profesion, genero, email };
@@ -73,7 +75,7 @@ router.post('/actualizar/:idProfesor', async (request, response) => {
 });
 
 // Eliminar un profesor
-router.get('/eliminar/:idProfesor', async (request, response) => {
+router.get('/eliminar/:idProfesor',isLoggedIn , async (request, response) => {
     const { idProfesor } = request.params;
     const resultado = await profesoresRepository.eliminarProfesor(idProfesor);
     if (resultado > 0) {
